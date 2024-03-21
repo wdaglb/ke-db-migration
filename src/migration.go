@@ -10,13 +10,20 @@ import (
 )
 
 func Migration() {
+	log.Printf("migrationDir: %s\n", config.Config.MigrationDir)
 	files := scanMigration(config.Config.MigrationDir)
+	if len(files) == 0 {
+		log.Printf("migrate empty\n")
+		return
+	}
 	var migrations []domain.Migration
 	core.DB.Where("complete=1").Order("version asc").Find(&migrations)
 	migrationMap := make(map[string]uint)
 	for _, migration := range migrations {
 		migrationMap[migration.Version] = migration.ID
 	}
+
+	num := 0
 
 	err := core.DB.Transaction(func(tx *gorm.DB) error {
 		for _, src := range files {
@@ -45,6 +52,7 @@ func Migration() {
 
 			data.Complete = 1
 			tx.Save(&data)
+			num++
 			log.Printf("migrate %s ok\n", data.Version)
 		}
 		return nil
@@ -53,5 +61,5 @@ func Migration() {
 		log.Printf("migrate fail: %v\n", err)
 		return
 	}
-	log.Printf("migrate number:%d completed\n", len(files))
+	log.Printf("migrate number:%d completed\n", num)
 }
