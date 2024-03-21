@@ -1,0 +1,21 @@
+database:
+  # 数据库类型，当前支持：postgres,mysql
+  driver: postgres
+  # 连接地址
+  host: 127.0.0.1
+  # 端口
+  port: 5432
+  # 数据库名
+  database: test
+  # schema
+  schema: public
+  # 用户名
+  username: postgres
+  # 密码
+  password: 123456
+
+# 迁移文件目录
+migrationDir: migration
+
+# 迁移库名称
+migrationDb: migration
