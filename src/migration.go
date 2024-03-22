@@ -25,16 +25,16 @@ func Migration() {
 
 	num := 0
 
-	err := core.DB.Transaction(func(tx *gorm.DB) error {
-		for _, src := range files {
+	for _, src := range files {
+		err := core.DB.Transaction(func(tx *gorm.DB) error {
 			filename := getFilename(src)
 			if _, ok := migrationMap[filename]; ok {
-				continue
+				return nil
 			}
 
 			dataBytes, err := os.ReadFile(src)
 			if err != nil {
-				continue
+				return err
 			}
 			sql := string(dataBytes)
 
@@ -54,12 +54,12 @@ func Migration() {
 			tx.Save(&data)
 			num++
 			log.Printf("migrate %s ok\n", data.Version)
+			return nil
+		})
+		if err != nil {
+			log.Printf("migrate fail: %v\n", err)
+			return
 		}
-		return nil
-	})
-	if err != nil {
-		log.Printf("migrate fail: %v\n", err)
-		return
 	}
 	log.Printf("migrate number:%d completed\n", num)
 }
