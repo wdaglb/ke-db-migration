@@ -1,7 +1,6 @@
 package src
 
 import (
-	"gorm.io/gorm"
 	"ke-db-migration/config"
 	"ke-db-migration/core"
 	"ke-db-migration/domain"
@@ -26,40 +25,35 @@ func Migration() {
 	num := 0
 
 	for _, src := range files {
-		err := core.DB.Transaction(func(tx *gorm.DB) error {
-			filename := getFilename(src)
-			if _, ok := migrationMap[filename]; ok {
-				return nil
-			}
+		filename := getFilename(src)
+		if _, ok := migrationMap[filename]; ok {
+			continue
+		}
 
-			dataBytes, err := os.ReadFile(src)
-			if err != nil {
-				return err
-			}
-			sql := string(dataBytes)
-
-			data := domain.Migration{
-				Version:  filename,
-				File:     src,
-				Complete: 0,
-			}
-			tx.Create(&data)
-
-			err = tx.Exec(sql).Error
-			if err != nil {
-				return err
-			}
-
-			data.Complete = 1
-			tx.Save(&data)
-			num++
-			log.Printf("migrate %s ok\n", data.Version)
-			return nil
-		})
+		dataBytes, err := os.ReadFile(src)
 		if err != nil {
 			log.Printf("migrate fail: %v\n", err)
-			return
+			break
 		}
+		sql := string(dataBytes)
+
+		data := domain.Migration{
+			Version:  filename,
+			File:     src,
+			Complete: 0,
+		}
+		core.DB.Create(&data)
+
+		err = core.DB.Exec(sql).Error
+		if err != nil {
+			log.Printf("migrate fail: %v\n", err)
+			break
+		}
+
+		data.Complete = 1
+		core.DB.Save(&data)
+		num++
+		log.Printf("migrate %s ok\n", data.Version)
 	}
 	log.Printf("migrate number:%d completed\n", num)
 }
