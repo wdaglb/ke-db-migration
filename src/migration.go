@@ -1,6 +1,7 @@
 package src
 
 import (
+	"fmt"
 	"ke-db-migration/config"
 	"ke-db-migration/core"
 	"ke-db-migration/domain"
@@ -9,8 +10,9 @@ import (
 )
 
 func Migration() {
-	log.Printf("migrationDir: %s\n", config.Config.MigrationDir)
-	files := scanMigration(config.Config.MigrationDir)
+	absDir := getAbsDir(config.Config.MigrationDir)
+	log.Printf("migrationDir: %s\n", absDir)
+	files := scanMigration(absDir)
 	if len(files) == 0 {
 		log.Printf("migrate empty\n")
 		return
@@ -23,6 +25,7 @@ func Migration() {
 	}
 
 	num := 0
+	notify := NewNotify()
 
 	for _, src := range files {
 		filename := getFilename(src)
@@ -32,6 +35,7 @@ func Migration() {
 
 		dataBytes, err := os.ReadFile(src)
 		if err != nil {
+			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))
 			log.Printf("migrate fail: %v\n", err)
 			break
 		}
@@ -46,6 +50,7 @@ func Migration() {
 
 		err = core.DB.Exec(sql).Error
 		if err != nil {
+			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))
 			log.Printf("migrate fail: %v\n", err)
 			break
 		}

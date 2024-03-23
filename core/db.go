@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"ke-db-migration/config"
 	"log"
 )
@@ -21,6 +22,7 @@ func InitDb() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	DB.Logger.LogMode(logger.Error)
 }
 
 func getConnection(conf config.Database) gorm.Dialector {

@@ -19,3 +19,9 @@ migrationDir: migration
 
 # 迁移库名称
 migrationDb: migration
+
+# 错误通知
+notify:
+  title: 测试迁移
+  # 企业微信机器人
+  qywx: http://127.0.0.1
