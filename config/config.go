@@ -14,6 +14,7 @@ type config struct {
 	Notify       Notify `yaml:"notify"`
 	MigrationDir string `yaml:"migrationDir"`
 	MigrationDb  string `yaml:"migrationDb"`
+	LogDir       string `yaml:"logDir"`
 	EnableLog    bool   `yaml:"enableLog"`
 }
 

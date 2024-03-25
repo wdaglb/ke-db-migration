@@ -1,3 +1,5 @@
 .idea
 /migration
+/migration_logs
+/dist
 *.log

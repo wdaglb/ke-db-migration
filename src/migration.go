@@ -17,10 +17,15 @@ func Migration() {
 		return
 	}
 	var migrations []domain.Migration
-	core.DB.Where("complete=1").Order("version asc").Find(&migrations)
+	core.DB.Order("version asc").Find(&migrations)
 	migrationMap := make(map[string]uint)
+	failMap := make(map[string]uint)
 	for _, migration := range migrations {
-		migrationMap[migration.Version] = migration.ID
+		if migration.Complete == 1 {
+			migrationMap[migration.Version] = migration.ID
+		} else {
+			failMap[migration.Version] = migration.ID
+		}
 	}
 
 	num := 0
@@ -45,7 +50,9 @@ func Migration() {
 			File:     src,
 			Complete: 0,
 		}
-		core.DB.Create(&data)
+		if _, ok := failMap[filename]; !ok {
+			core.DB.Create(&data)
+		}
 
 		err = core.DB.Exec(sql).Error
 		if err != nil {

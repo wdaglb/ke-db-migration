@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"ke-db-migration/config"
-	"log"
 )
 
 var (
@@ -20,7 +19,7 @@ func initDb() {
 	dbConfig = &gorm.Config{}
 	DB, err = gorm.Open(getConnection(config.Config.Database), dbConfig)
 	if err != nil {
-		log.Fatal(err)
+		Logger.Errorf(err.Error())
 	}
 	DB.Logger.LogMode(logger.Error)
 }
