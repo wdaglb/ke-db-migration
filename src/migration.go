@@ -5,16 +5,15 @@ import (
 	"ke-db-migration/config"
 	"ke-db-migration/core"
 	"ke-db-migration/domain"
-	"log"
 	"os"
 )
 
 func Migration() {
 	absDir := getAbsDir(config.Config.MigrationDir)
-	log.Printf("migrationDir: %s\n", absDir)
+	core.Logger.Infof("migrationDir: %s\n", absDir)
 	files := scanMigration(absDir)
 	if len(files) == 0 {
-		log.Printf("migrate empty\n")
+		core.Logger.Infof("migrate empty\n")
 		return
 	}
 	var migrations []domain.Migration
@@ -36,7 +35,7 @@ func Migration() {
 		dataBytes, err := os.ReadFile(src)
 		if err != nil {
 			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))
-			log.Printf("migrate fail: %v\n", err)
+			core.Logger.Errorf("migrate fail: %v\n", err)
 			break
 		}
 		sql := string(dataBytes)
@@ -51,14 +50,14 @@ func Migration() {
 		err = core.DB.Exec(sql).Error
 		if err != nil {
 			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))
-			log.Printf("migrate fail: %v\n", err)
+			core.Logger.Errorf("migrate fail: %v\n", err)
 			break
 		}
 
 		data.Complete = 1
 		core.DB.Save(&data)
 		num++
-		log.Printf("migrate %s ok\n", data.Version)
+		core.Logger.Infof("migrate %s ok\n", data.Version)
 	}
-	log.Printf("migrate number:%d completed\n", num)
+	core.Logger.Infof("migrate number:%d completed\n", num)
 }

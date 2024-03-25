@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	core.InitDb()
+	core.InitApp()
 	_ = core.DB.AutoMigrate(domain.Migration{})
 	src.Migration()
 }

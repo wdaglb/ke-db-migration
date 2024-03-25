@@ -15,7 +15,7 @@ var (
 	dbConfig *gorm.Config
 )
 
-func InitDb() {
+func initDb() {
 	var err error
 	dbConfig = &gorm.Config{}
 	DB, err = gorm.Open(getConnection(config.Config.Database), dbConfig)
