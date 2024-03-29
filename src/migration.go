@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	"ke-db-migration/config"
 	"ke-db-migration/core"
 	"ke-db-migration/domain"
@@ -54,7 +55,9 @@ func Migration() {
 			core.DB.Create(&data)
 		}
 
-		err = core.DB.Exec(sql).Error
+		err = core.DB.Transaction(func(tx *gorm.DB) error {
+			return tx.Exec(sql).Error
+		})
 		if err != nil {
 			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))
 			core.Logger.Errorf("migrate fail: %v\n", err)
