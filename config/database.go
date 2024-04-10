@@ -8,4 +8,5 @@ type Database struct {
 	Schema   string
 	Username string
 	Password string
+	Charset  string
 }
