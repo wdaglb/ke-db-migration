@@ -30,6 +30,9 @@ func getConnection(conf config.Database) gorm.Dialector {
 			"password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai",
 			conf.Host, conf.Username, conf.Password, conf.Database, conf.Port)})
 	}
+	if conf.Charset == "" {
+		conf.Charset = "utf8"
+	}
 	return mysql.New(mysql.Config{DSN: fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		conf.Username, conf.Password, conf.Host, conf.Port, conf.Database, conf.Charset)})
 }
