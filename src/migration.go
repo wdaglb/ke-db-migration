@@ -7,6 +7,7 @@ import (
 	"ke-db-migration/core"
 	"ke-db-migration/domain"
 	"os"
+	"strings"
 )
 
 func Migration() {
@@ -55,8 +56,14 @@ func Migration() {
 			core.DB.Create(&data)
 		}
 
+		sqlList := strings.Split(sql, ";")
 		err = core.DB.Transaction(func(tx *gorm.DB) error {
-			return tx.Exec(sql).Error
+			for _, sqlStr := range sqlList {
+				if err := tx.Exec(sqlStr).Error; err != nil {
+					return err
+				}
+			}
+			return nil
 		})
 		if err != nil {
 			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))

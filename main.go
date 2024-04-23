@@ -8,6 +8,7 @@ import (
 
 func main() {
 	core.InitApp()
+
 	_ = core.DB.AutoMigrate(domain.Migration{})
 	src.Migration()
 }
