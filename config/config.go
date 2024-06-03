@@ -19,7 +19,7 @@ type config struct {
 }
 
 func init() {
-	dir := flag.String("dir", "config.yml", "配置文件")
+	dir := flag.String("config", "config.yml", "配置文件")
 
 	dataBytes, err := os.ReadFile(*dir)
 	if err != nil {
