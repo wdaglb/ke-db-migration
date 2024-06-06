@@ -62,6 +62,9 @@ func Migration() {
 		err = core.DB.Transaction(func(tx *gorm.DB) error {
 			sqlList := strings.Split(sql, ";")
 			for _, sqlItem := range sqlList {
+				if strings.Trim(sqlItem, " ") == "" {
+					continue
+				}
 				er := tx.Exec(sqlItem).Error
 				if er != nil {
 					return er
@@ -70,7 +73,7 @@ func Migration() {
 			return nil
 		})
 		if err != nil {
-			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))
+			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 [%s] %s", data.Version, err))
 			core.Logger.Errorf("migrate fail: %v\n", err)
 			break
 		}
