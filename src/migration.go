@@ -62,6 +62,8 @@ func Migration() {
 		err = core.DB.Transaction(func(tx *gorm.DB) error {
 			sqlList := strings.Split(sql, ";")
 			for _, sqlItem := range sqlList {
+				sqlItem = strings.ReplaceAll(sqlItem, "\n", "")
+				sqlItem = strings.ReplaceAll(sqlItem, "\r", "")
 				if strings.Trim(sqlItem, " ") == "" {
 					continue
 				}
