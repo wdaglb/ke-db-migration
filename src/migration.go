@@ -6,6 +6,7 @@ import (
 	"ke-db-migration/config"
 	"ke-db-migration/core"
 	"ke-db-migration/domain"
+	"ke-db-migration/utils"
 	"os"
 	"strings"
 )
@@ -60,11 +61,9 @@ func Migration() {
 		}
 
 		err = core.DB.Transaction(func(tx *gorm.DB) error {
-			sqlList := strings.Split(sql, ";")
+			sqlList := strings.Split(utils.FilterSpaceLine(sql), ";")
 			for _, sqlItem := range sqlList {
-				sqlItem = strings.ReplaceAll(sqlItem, "\n", "")
-				sqlItem = strings.ReplaceAll(sqlItem, "\r", "")
-				if strings.Trim(sqlItem, " ") == "" {
+				if strings.TrimSpace(sqlItem) == "" {
 					continue
 				}
 				er := tx.Exec(sqlItem).Error
