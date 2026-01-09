@@ -8,7 +8,7 @@ import (
 func scanMigration(mPath string) []string {
 	var files []string
 	err := filepath.Walk(mPath, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
+		if info == nil || info.IsDir() {
 			return nil
 		}
 		files = append(files, path)

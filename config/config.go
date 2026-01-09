@@ -19,11 +19,14 @@ type config struct {
 	MigrationDb  string `yaml:"migrationDb"`
 	LogDir       string `yaml:"logDir"`
 	EnableLog    bool   `yaml:"enableLog"`
+	SkipError    bool   `yaml:"skipError"`
 }
 
 func init() {
 	configPath := flag.String("config", "config.yml", "配置文件")
+	skipError := flag.Bool("skip-error", false, "是否跳过错误文件")
 	flag.Parse()
+
 	dataBytes, err := parseConfig(*configPath)
 	if err != nil {
 		log.Fatal(err)
@@ -33,6 +36,12 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == "skip-error" {
+			Config.SkipError = *skipError
+		}
+	})
 }
 
 func parseConfig(configSrc string) ([]byte, error) {
