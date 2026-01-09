@@ -77,8 +77,11 @@ func Migration() {
 			return nil
 		})
 		if err != nil {
-			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 [%s] %s", data.Version, err))
 			core.Logger.Errorf("migrate fail: %v\n", err)
+			if config.Config.SkipError {
+				continue
+			}
+			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 [%s] %s", data.Version, err))
 			break
 		}
 
