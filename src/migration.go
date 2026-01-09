@@ -45,8 +45,11 @@ func Migration() {
 
 		dataBytes, err := os.ReadFile(src)
 		if err != nil {
-			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))
 			core.Logger.Errorf("migrate fail: %v\n", err)
+			if config.Config.SkipError {
+				continue
+			}
+			_ = notify.Qywx(fmt.Sprintf("数据库迁移失败 %s", err))
 			break
 		}
 		sql := string(dataBytes)
